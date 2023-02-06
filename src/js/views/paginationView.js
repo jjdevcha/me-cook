@@ -8,7 +8,7 @@ class PaginationView extends View {
     this._parentElement.addEventListener("click", function (e) {
       const btn = e.target.closest(".btn--inline");
 
-      if (!btn) return;
+      if (!btn || btn.classList.contains("curPage")) return;
 
       const goToPage = +btn.dataset.goto;
 
@@ -25,12 +25,19 @@ class PaginationView extends View {
     // console.log("numPages", numPages);
     // console.log("curPage", curPage);
 
+    let curPageMarkup = `
+      <button data-goto="${curPage}" class="btn--inline curPage pagination__btn">
+          <span>${curPage}</span>
+      </button>
+      `;
+
     // Page 1, and there are other pages
     if (curPage === 1 && numPages > 1) {
       return `
+      ${curPageMarkup}
         <button data-goto="${
           curPage + 1
-        }" class="btn--inline pagination__btn--next">
+        }" class="btn--inline  pagination__btn--next">
             <span>Page ${curPage + 1}</span>
             <svg class="search__icon">
                 <use href="${icons}#icon-arrow-right"></use>
@@ -44,40 +51,45 @@ class PaginationView extends View {
       return `
         <button data-goto=${
           curPage - 1
-        } class="btn--inline pagination__btn--prev">
+        } class="btn--inline  pagination__btn--prev">
             <svg class="search__icon">
                 <use href="${icons}#icon-arrow-left"></use>
             </svg>
             <span>Page ${curPage - 1}</span>
         </button>
+        ${curPageMarkup}
       `;
     }
 
     // Other page
     if (curPage < numPages) {
       return `
+              <button data-goto=${
+                curPage - 1
+              } class="btn--inline  pagination__btn--prev">
+                  <svg class="search__icon">
+                      <use href="${icons}#icon-arrow-left"></use>
+                  </svg>
+                  <span>Page ${curPage - 1}</span>
+              </button>
+
+              ${curPageMarkup}
+              
             <button data-goto="${
               curPage + 1
-            }" class="btn--inline pagination__btn--next">
+            }" class="btn--inline  pagination__btn--next">
                 <span>Page ${curPage + 1}</span>
                 <svg class="search__icon">
                     <use href="${icons}#icon-arrow-right"></use>
                 </svg>
             </button>
 
-            <button data-goto=${
-              curPage - 1
-            } class="btn--inline pagination__btn--prev">
-                <svg class="search__icon">
-                    <use href="${icons}#icon-arrow-left"></use>
-                </svg>
-                <span>Page ${curPage - 1}</span>
-            </button>
+
       `;
     }
 
     // Page 1, and there are NO other pages
-    return "";
+    return curPageMarkup;
   }
 
   //   _generateMarkupButton()
